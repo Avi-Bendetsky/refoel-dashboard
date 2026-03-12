@@ -4,10 +4,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f0f23;color:#e0e0e0;display:flex;min-height:100vh}
-:root{--teal:#0d9488;--teal-dark:#0d6b7a;--sidebar-bg:#1a1a2e;--card-bg:#16213e;--card-border:#2a2a4a;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--text:#e0e0e0;--text-muted:#94a3b8}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--body-bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s}
+:root{--teal:#0d9488;--teal-dark:#0d6b7a;--sidebar-bg:#1a1a2e;--card-bg:#16213e;--card-border:#2a2a4a;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--text:#e0e0e0;--text-muted:#94a3b8;--body-bg:#0f0f23;--input-bg:#0f0f23;--chart-text:#94a3b8;--header-grad-1:#0d6b7a;--header-grad-2:#0d9488;--header-grad-3:#14b8a6;--sidebar-header-1:var(--teal-dark);--sidebar-header-2:var(--teal)}
+body.light{--sidebar-bg:#f1f5f9;--card-bg:#ffffff;--card-border:#e2e8f0;--text:#1e293b;--text-muted:#64748b;--body-bg:#f8fafc;--input-bg:#ffffff;--chart-text:#475569;--header-grad-1:#0d9488;--header-grad-2:#14b8a6;--header-grad-3:#2dd4bf;--sidebar-header-1:#0d9488;--sidebar-header-2:#14b8a6;--success:#059669;--warning:#d97706;--danger:#dc2626}
 .sidebar{width:260px;background:var(--sidebar-bg);border-right:1px solid var(--card-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
-.sidebar-header{padding:20px;background:linear-gradient(135deg,var(--teal-dark),var(--teal));text-align:center}
+.sidebar-header{padding:20px;background:linear-gradient(135deg,var(--sidebar-header-1),var(--sidebar-header-2));text-align:center}
 .sidebar-header h1{font-size:18px;color:white;font-weight:700}
 .sidebar-header p{font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px}
 .nav-section{padding:12px 16px 4px;font-size:10px;text-transform:uppercase;color:var(--text-muted);letter-spacing:1px}
@@ -15,7 +16,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f0f23;color:#e0e0e
 .nav-item:hover{background:rgba(13,148,136,0.1)}
 .nav-item.active{background:rgba(13,148,136,0.15);border-left-color:var(--teal);color:var(--teal)}
 .main{margin-left:260px;flex:1;display:flex;flex-direction:column}
-.header{background:linear-gradient(135deg,#0d6b7a,#0d9488,#14b8a6);padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+.header{background:linear-gradient(135deg,var(--header-grad-1),var(--header-grad-2),var(--header-grad-3));padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
 .header h2{font-size:20px;color:white}.header .badge{background:rgba(0,0,0,0.2);padding:6px 14px;border-radius:20px;font-size:12px;color:white}
 .content{padding:20px;flex:1;overflow-y:auto}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
@@ -49,8 +50,17 @@ tr:hover{background:rgba(13,148,136,0.05)}
 .recalc-btn:hover{opacity:0.9}
 .page{display:none}.page.active{display:block}
 .sv{color:var(--success);font-weight:600}.sw{color:var(--warning);font-weight:600}.sd{color:var(--danger);font-weight:600}
-@media print{.sidebar{display:none}.main{margin-left:0}body{background:white;color:black}.kpi-card,.chart-card,.table-wrap,.cp{border-color:#ddd;background:white}.kpi-card .value{color:#0d6b7a}}
+@media print{.sidebar{display:none}.main{margin-left:0}body{background:white;color:black}.kpi-card,.chart-card,.table-wrap,.cp{border-color:#ddd;background:white}.kpi-card .value{color:#0d6b7a}.theme-toggle{display:none}}
 @media(max-width:768px){.sidebar{width:200px}.main{margin-left:200px}.chart-grid{grid-template-columns:1fr}}
+.theme-toggle{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;transition:all 0.2s}
+.theme-toggle:hover{background:rgba(255,255,255,0.25)}
+body.light .sidebar{border-right-color:var(--card-border)}
+body.light .kpi-card{box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+body.light .chart-card,body.light .table-wrap,body.light .cp{box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+body.light .nav-item:hover{background:rgba(13,148,136,0.06)}
+body.light .nav-item.active{background:rgba(13,148,136,0.1)}
+body.light .kpi-card[onclick]:hover{background:rgba(13,148,136,0.04);box-shadow:0 4px 12px rgba(13,148,136,0.1)}
+body.light tr:hover{background:rgba(13,148,136,0.03)}
 </style>
 </head><body>
 <div class="sidebar">
@@ -68,7 +78,7 @@ tr:hover{background:rgba(13,148,136,0.05)}
 <div id="calcTime" style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:4px"></div>
 </div></div>
 <div class="main">
-<div class="header"><h2 id="pageTitle">Executive Overview</h2><span class="badge">v7 MDF Baseline</span></div>
+<div class="header"><h2 id="pageTitle">Executive Overview</h2><div style="display:flex;align-items:center;gap:10px"><button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">&#9790; Dark</button><span class="badge">v7 MDF Baseline</span></div></div>
 <div class="content">
 <div class="page active" id="page1"><div class="kpi-grid" id="kg1"></div>
 <div class="chart-grid"><div class="chart-card"><h3>Revenue by Country (5-Year)</h3><canvas id="cRC"></canvas></div>
@@ -237,6 +247,8 @@ function kpi(l,v,s,pg,el){
 }
 function drill(el){var pg=+el.getAttribute("data-pg"),eid=el.getAttribute("data-el");showPage(pg);if(eid){setTimeout(function(){var e=document.getElementById(eid);if(e)e.scrollIntoView({behavior:"smooth",block:"start"})},150)}}
 
+function TC(){return getComputedStyle(document.documentElement).getPropertyValue('--chart-text').trim()||'#94a3b8'}
+function toggleTheme(){document.body.classList.toggle('light');const isLight=document.body.classList.contains('light');document.getElementById('themeBtn').innerHTML=isLight?'&#9728;&#65039; Light':'&#9790; Dark';try{localStorage.setItem('refoel-theme',isLight?'light':'dark')}catch(e){}Object.values(CI).forEach(c=>{if(c&&c.destroy)c.destroy()});CI={};renderAll()}
 function renderAll(){rp1();rp2();rp3();rp4();rp5()}
 
 function rp1(){
@@ -252,15 +264,15 @@ function rp1(){
     kpi('DSCR',R.ds[4]<999?R.ds[4].toFixed(1)+'x':'N/A','Year 5',4,'tST'),kpi('D/E Ratio',R.de.toFixed(2)+'x','',4,'tLN'),
   ].join('');
   const cn=S.countries.filter(c=>c.on).map(c=>c.name);
-  mc('cRC',{type:'bar',data:{labels:YL,datasets:cn.map((c,i)=>({label:c,data:R.rc[c],backgroundColor:CL[i%CL.length],stack:'s'}))},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:'#94a3b8'}},y:{stacked:true,ticks:{color:'#94a3b8',callback:v=>fc(v)}}}}});
+  mc('cRC',{type:'bar',data:{labels:YL,datasets:cn.map((c,i)=>({label:c,data:R.rc[c],backgroundColor:CL[i%CL.length],stack:'s'}))},options:{responsive:true,plugins:{legend:{labels:{color:TC(),font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:TC()}},y:{stacked:true,ticks:{color:TC(),callback:v=>fc(v)}}}}});
   const ck=Object.keys(R.rbc).filter(k=>R.rbc[k]>0);
-  mc('cRCat',{type:'doughnut',data:{labels:ck,datasets:[{data:ck.map(k=>R.rbc[k]),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{color:'#94a3b8',font:{size:10}}}}}});
+  mc('cRCat',{type:'doughnut',data:{labels:ck,datasets:[{data:ck.map(k=>R.rbc[k]),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{color:TC(),font:{size:10}}}}}});
 }
 
 function rp2(){
   document.getElementById('kg2').innerHTML=[kpi('Year 5 EBITDA',fc(R.eb[4]),'',2,'tPL'),kpi('Year 5 GM',fp(R.gm[4]),'',2,'tPL'),kpi('5Y Op Cash',fc(R.oc.reduce((a,b)=>a+b,0)),'',2,'tCFD'),kpi('Cum Cash Y5',fc(R.cc[4]),'',2,'tCFD')].join('');
-  mc('cPL',{type:'line',data:{labels:YL,datasets:[{label:'Revenue',data:R.tr,borderColor:'#0d9488',backgroundColor:'rgba(13,148,136,0.1)',fill:true,tension:0.3},{label:'COGS',data:R.tc,borderColor:'#ef4444',tension:0.3},{label:'Gross Profit',data:R.gp,borderColor:'#f59e0b',tension:0.3},{label:'EBITDA',data:R.eb,borderColor:'#3b82f6',tension:0.3},{label:'Net Profit',data:R.np,borderColor:'#10b981',tension:0.3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{y:{ticks:{color:'#94a3b8',callback:v=>fc(v)}},x:{ticks:{color:'#94a3b8'}}}}});
-  mc('cCF',{type:'bar',data:{labels:YL,datasets:[{label:'Operating CF',data:R.oc,backgroundColor:'#0d9488'},{label:'CAPEX',data:R.cd,backgroundColor:'#ef4444'},{label:'Net CF',data:R.nf,backgroundColor:'#3b82f6'}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{y:{ticks:{color:'#94a3b8',callback:v=>fc(v)}},x:{ticks:{color:'#94a3b8'}}}}});
+  mc('cPL',{type:'line',data:{labels:YL,datasets:[{label:'Revenue',data:R.tr,borderColor:'#0d9488',backgroundColor:'rgba(13,148,136,0.1)',fill:true,tension:0.3},{label:'COGS',data:R.tc,borderColor:'#ef4444',tension:0.3},{label:'Gross Profit',data:R.gp,borderColor:'#f59e0b',tension:0.3},{label:'EBITDA',data:R.eb,borderColor:'#3b82f6',tension:0.3},{label:'Net Profit',data:R.np,borderColor:'#10b981',tension:0.3}]},options:{responsive:true,plugins:{legend:{labels:{color:TC()}}},scales:{y:{ticks:{color:TC(),callback:v=>fc(v)}},x:{ticks:{color:TC()}}}}});
+  mc('cCF',{type:'bar',data:{labels:YL,datasets:[{label:'Operating CF',data:R.oc,backgroundColor:'#0d9488'},{label:'CAPEX',data:R.cd,backgroundColor:'#ef4444'},{label:'Net CF',data:R.nf,backgroundColor:'#3b82f6'}]},options:{responsive:true,plugins:{legend:{labels:{color:TC()}}},scales:{y:{ticks:{color:TC(),callback:v=>fc(v)}},x:{ticks:{color:TC()}}}}});
   const rw=['Revenue','COGS','Gross Profit','OPEX','EBITDA','Depreciation','PBT','Tax','Donation','Net Profit','Gross Margin','Net Margin'];
   const vl=[R.tr,R.tc,R.gp,R.to,R.eb,R.td,R.pb,R.ta,R.dn,R.np,R.gm,R.nm];
   let h='<table><tr><th>Account</th>'+YL.map(y=>'<th>'+y+'</th>').join('')+'<th>5-Year Total</th></tr>';
@@ -278,10 +290,10 @@ function rp2(){
 function rp3(){
   document.getElementById('kg3').innerHTML=[kpi('Total CAPEX',fc(R.tx),'',3,'tCX'),kpi('Active Stages',R.as+'/8','',3,'tCH'),kpi('Total Products',R.tp+'','',5,'tPC')].join('');
   const sn=S.stages.filter(s=>s.on).map(s=>s.name);
-  mc('cRS',{type:'bar',data:{labels:YL,datasets:sn.map((s,i)=>({label:s,data:R.rv[s],backgroundColor:CL[i%CL.length],stack:'s'}))},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:'#94a3b8'}},y:{stacked:true,ticks:{color:'#94a3b8',callback:v=>fc(v)}}}}});
+  mc('cRS',{type:'bar',data:{labels:YL,datasets:sn.map((s,i)=>({label:s,data:R.rv[s],backgroundColor:CL[i%CL.length],stack:'s'}))},options:{responsive:true,plugins:{legend:{labels:{color:TC(),font:{size:10}}}},scales:{x:{stacked:true,ticks:{color:TC()}},y:{stacked:true,ticks:{color:TC(),callback:v=>fc(v)}}}}});
   const sa=S.stages.filter(s=>s.on);
-  mc('cCS',{type:'bar',data:{labels:sa.map(s=>s.name),datasets:[{data:sa.map(s=>s.capex),backgroundColor:CL}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8',callback:v=>fc(v)}},y:{ticks:{color:'#94a3b8',font:{size:10}}}}}});
-  mc('cMT',{type:'line',data:{labels:YL,datasets:[{label:'Gross Margin',data:R.gm,borderColor:'#0d9488',tension:0.3},{label:'Net Margin',data:R.nm,borderColor:'#f59e0b',tension:0.3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{y:{ticks:{color:'#94a3b8',callback:v=>fp(v)}},x:{ticks:{color:'#94a3b8'}}}}});
+  mc('cCS',{type:'bar',data:{labels:sa.map(s=>s.name),datasets:[{data:sa.map(s=>s.capex),backgroundColor:CL}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC(),callback:v=>fc(v)}},y:{ticks:{color:TC(),font:{size:10}}}}}});
+  mc('cMT',{type:'line',data:{labels:YL,datasets:[{label:'Gross Margin',data:R.gm,borderColor:'#0d9488',tension:0.3},{label:'Net Margin',data:R.nm,borderColor:'#f59e0b',tension:0.3}]},options:{responsive:true,plugins:{legend:{labels:{color:TC()}}},scales:{y:{ticks:{color:TC(),callback:v=>fp(v)}},x:{ticks:{color:TC()}}}}});
   let h='<table><tr><th>Stage</th><th>CAPEX</th><th>Status</th></tr>';
   S.stages.forEach(s=>{h+='<tr><td>'+s.name+'</td><td>'+fc(s.capex)+'</td><td>'+(s.on?'<span class="sv">ON</span>':'OFF')+'</td></tr>'});
   document.getElementById('tCX').innerHTML=h+'</table>';
@@ -324,11 +336,11 @@ function rp4(){
 function rp5(){
   // Revenue Sensitivity chart
   const sd=S.sensitivity;
-  mc('cSE',{type:'bar',data:{labels:sd.map(s=>s.variable),datasets:[{label:'5yr NP',data:sd.map(s=>s['5yr_np']),backgroundColor:sd.map(s=>s.variable.includes('BASE')?'#0d9488':s.variable.includes('+')?'#10b981':'#ef4444')}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8',callback:v=>fc(v)}},y:{ticks:{color:'#94a3b8',font:{size:10}}}}}});
+  mc('cSE',{type:'bar',data:{labels:sd.map(s=>s.variable),datasets:[{label:'5yr NP',data:sd.map(s=>s['5yr_np']),backgroundColor:sd.map(s=>s.variable.includes('BASE')?'#0d9488':s.variable.includes('+')?'#10b981':'#ef4444')}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC(),callback:v=>fc(v)}},y:{ticks:{color:TC(),font:{size:10}}}}}});
 
   // DSCR Trend
   const dscrData=S.stress_test.map(s=>s.dscr);
-  mc('cDS',{type:'line',data:{labels:S.stress_test.map(s=>s.scenario),datasets:[{label:'DSCR',data:dscrData.map(d=>d<100?d:null),borderColor:'#0d9488',tension:0.3,pointBackgroundColor:'#0d9488'},{label:'Min Threshold (1.2x)',data:dscrData.map(()=>1.2),borderColor:'#ef4444',borderDash:[5,5],pointRadius:0}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{y:{ticks:{color:'#94a3b8'}},x:{ticks:{color:'#94a3b8'}}}}});
+  mc('cDS',{type:'line',data:{labels:S.stress_test.map(s=>s.scenario),datasets:[{label:'DSCR',data:dscrData.map(d=>d<100?d:null),borderColor:'#0d9488',tension:0.3,pointBackgroundColor:'#0d9488'},{label:'Min Threshold (1.2x)',data:dscrData.map(()=>1.2),borderColor:'#ef4444',borderDash:[5,5],pointRadius:0}]},options:{responsive:true,plugins:{legend:{labels:{color:TC()}}},scales:{y:{ticks:{color:TC()}},x:{ticks:{color:TC()}}}}});
 
   // Revenue Sensitivity Table
   let h='<table><tr><th>Scenario</th><th>5yr Revenue</th><th>5yr Net Profit</th><th>ROI</th><th>Payback (yr)</th></tr>';
@@ -386,7 +398,7 @@ function buildControls(){
   h='';S.product_controls.forEach((p,i)=>{h+='<div class="cr"><input type="checkbox" id="xp'+i+'" '+(p.on?'checked':'')+' onchange="S.product_controls['+i+'].on=this.checked"><label for="xp'+i+'">'+p.category+'</label><label style="min-width:50px">COGS%</label><input type="number" value="'+(p.cogs_pct*100).toFixed(1)+'" onchange="S.product_controls['+i+'].cogs_pct=+this.value/100" step="0.1" style="width:70px"><label style="min-width:50px">Markup</label><input type="number" value="'+p.markup+'" onchange="S.product_controls['+i+'].markup=+this.value" step="0.1" style="width:70px"></div>'});
   document.getElementById('cprd').innerHTML=h;
   h='<table style="width:100%;font-size:12px"><tr><th>Stage</th>'+YL.map(y=>'<th>'+y+'</th>').join('')+'</tr>';
-  S.stages.forEach((s,si)=>{h+='<tr><td style="font-size:11px">'+s.name+'</td>';for(let y=0;y<5;y++)h+='<td><input type="number" value="'+(S.cap_ramps[si][y]*100).toFixed(1)+'" onchange="S.cap_ramps['+si+']['+y+']=+this.value/100" step="5" style="width:55px;background:#0f0f23;border:1px solid #2a2a4a;color:#e0e0e0;padding:3px;border-radius:3px;font-size:11px"></td>';h+='</tr>'});
+  S.stages.forEach((s,si)=>{h+='<tr><td style="font-size:11px">'+s.name+'</td>';for(let y=0;y<5;y++)h+='<td><input type="number" value="'+(S.cap_ramps[si][y]*100).toFixed(1)+'" onchange="S.cap_ramps['+si+']['+y+']=+this.value/100" step="5" style="width:55px;background:var(--input-bg);border:1px solid #2a2a4a;color:#e0e0e0;padding:3px;border-radius:3px;font-size:11px"></td>';h+='</tr>'});
   document.getElementById('ccr').innerHTML=h+'</table>';
   h='';FK.forEach((k,i)=>{const v=FP[i]?(S.financial_controls[k]*100).toFixed(1):S.financial_controls[k];h+='<div class="cr"><label>'+FL[i]+'</label><input type="number" value="'+v+'" onchange="sfc('+i+',+this.value)" step="'+(FP[i]?'0.1':'1')+'"></div>'});
   document.getElementById('cf').innerHTML=h;
@@ -416,7 +428,7 @@ function buildControls(){
       spH+='<tr><td>'+c.name+'</td>';
       spH+='<td style="text-align:right;color:var(--text-muted)">'+dm.toLocaleString()+'</td>';
       spH+='<td style="text-align:right;color:var(--warning)">'+sh.toLocaleString()+'</td>';
-      spH+='<td style="text-align:right"><input type="number" value="'+su+'" onchange="updSP(\''+c.name+'\',\''+cat.replace(/'/g,"\\'")+'\',+this.value)" step="100" style="width:90px;background:#0f0f23;border:1px solid var(--teal);color:var(--teal);padding:4px 6px;border-radius:4px;font-size:11px;text-align:right;font-weight:600"></td>';
+      spH+='<td style="text-align:right"><input type="number" value="'+su+'" onchange="updSP(\''+c.name+'\',\''+cat.replace(/'/g,"\\'")+'\',+this.value)" step="100" style="width:90px;background:var(--input-bg);border:1px solid var(--teal);color:var(--teal);padding:4px 6px;border-radius:4px;font-size:11px;text-align:right;font-weight:600"></td>';
       spH+='<td style="text-align:right;font-size:10px;color:var(--success)">'+(su*(PRICE_PER_PKG[cat]||0)).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0})+'</td>';
       spH+='<td style="text-align:right;font-size:10px;color:var(--text-muted)">'+capPct+'%</td>';
       spH+='</tr>';
@@ -440,6 +452,6 @@ const PT=['','Executive Overview','Financial Deep Dive','CAPEX & Pipeline','Risk
 function showPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page'+n).classList.add('active');document.querySelectorAll('.nav-item').forEach((item,i)=>item.classList.toggle('active',i===n-1));document.getElementById('pageTitle').textContent=PT[n]}
 function ts(el){el.classList.toggle('open');el.nextElementSibling.classList.toggle('open')}
 function recalculate(){const t=performance.now();runEngine();buildControls();renderAll();document.getElementById('calcTime').textContent='Calculated in '+(performance.now()-t).toFixed(0)+'ms'}
-document.addEventListener('DOMContentLoaded',function(){buildControls();runEngine();renderAll();document.getElementById('calcTime').textContent='Ready'});
+document.addEventListener('DOMContentLoaded',function(){try{if(localStorage.getItem('refoel-theme')==='light'){document.body.classList.add('light');document.getElementById('themeBtn').innerHTML='&#9728;&#65039; Light'}}catch(e){}buildControls();runEngine();renderAll();document.getElementById('calcTime').textContent='Ready'});
 
 </script></body></html>

@@ -41,7 +41,7 @@ tr:hover{background:rgba(13,148,136,0.05)}
 .cb{display:none}.cb.open{display:block}
 .cr{display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid rgba(42,42,74,0.5);flex-wrap:wrap}
 .cr label{min-width:160px;font-size:12px;color:var(--text-muted)}
-.cr input[type=number]{background:#0f0f23;border:1px solid var(--card-border);color:var(--text);padding:4px 8px;border-radius:4px;width:90px;font-size:12px}
+.cr input[type=number]{background:var(--input-bg);border:1px solid var(--card-border);color:var(--text);padding:4px 8px;border-radius:4px;width:90px;font-size:12px}
 .cr input[type=checkbox]{accent-color:var(--teal)}
 .tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
 .ti{display:flex;align-items:center;gap:6px;font-size:12px}
@@ -398,7 +398,7 @@ function buildControls(){
   h='';S.product_controls.forEach((p,i)=>{h+='<div class="cr"><input type="checkbox" id="xp'+i+'" '+(p.on?'checked':'')+' onchange="S.product_controls['+i+'].on=this.checked"><label for="xp'+i+'">'+p.category+'</label><label style="min-width:50px">COGS%</label><input type="number" value="'+(p.cogs_pct*100).toFixed(1)+'" onchange="S.product_controls['+i+'].cogs_pct=+this.value/100" step="0.1" style="width:70px"><label style="min-width:50px">Markup</label><input type="number" value="'+p.markup+'" onchange="S.product_controls['+i+'].markup=+this.value" step="0.1" style="width:70px"></div>'});
   document.getElementById('cprd').innerHTML=h;
   h='<table style="width:100%;font-size:12px"><tr><th>Stage</th>'+YL.map(y=>'<th>'+y+'</th>').join('')+'</tr>';
-  S.stages.forEach((s,si)=>{h+='<tr><td style="font-size:11px">'+s.name+'</td>';for(let y=0;y<5;y++)h+='<td><input type="number" value="'+(S.cap_ramps[si][y]*100).toFixed(1)+'" onchange="S.cap_ramps['+si+']['+y+']=+this.value/100" step="5" style="width:55px;background:var(--input-bg);border:1px solid #2a2a4a;color:#e0e0e0;padding:3px;border-radius:3px;font-size:11px"></td>';h+='</tr>'});
+  S.stages.forEach((s,si)=>{h+='<tr><td style="font-size:11px">'+s.name+'</td>';for(let y=0;y<5;y++)h+='<td><input type="number" value="'+(S.cap_ramps[si][y]*100).toFixed(1)+'" onchange="S.cap_ramps['+si+']['+y+']=+this.value/100" step="5" style="width:55px;background:var(--input-bg);border:1px solid var(--card-border);color:var(--text);padding:3px;border-radius:3px;font-size:11px"></td>';h+='</tr>'});
   document.getElementById('ccr').innerHTML=h+'</table>';
   h='';FK.forEach((k,i)=>{const v=FP[i]?(S.financial_controls[k]*100).toFixed(1):S.financial_controls[k];h+='<div class="cr"><label>'+FL[i]+'</label><input type="number" value="'+v+'" onchange="sfc('+i+',+this.value)" step="'+(FP[i]?'0.1':'1')+'"></div>'});
   document.getElementById('cf').innerHTML=h;
@@ -411,7 +411,7 @@ function buildControls(){
   spH+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px" id="spTabs">';
   spCats.forEach((cat,i)=>{
     const short=cat.split(' ')[0].split('/')[0];
-    spH+='<button onclick="showSpTab('+i+')" style="padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid var(--card-border);background:'+(i===0?'var(--teal)':'#0f0f23')+';color:'+(i===0?'white':'var(--text-muted)')+'" class="sp-tab" data-idx="'+i+'">'+short+'</button>';
+    spH+='<button onclick="showSpTab('+i+')" style="padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid var(--card-border);background:'+(i===0?'var(--teal)':'var(--input-bg)')+';color:'+(i===0?'white':'var(--text-muted)')+'" class="sp-tab" data-idx="'+i+'">'+short+'</button>';
   });
   spH+='</div>';
   spCats.forEach((cat,ti)=>{
@@ -446,7 +446,7 @@ function buildControls(){
   document.getElementById('csh').innerHTML=h+'</table></div>';
 }
 
-function showSpTab(idx){document.querySelectorAll('.sp-panel').forEach((p,i)=>{p.style.display=i===idx?'block':'none'});document.querySelectorAll('.sp-tab').forEach((t,i)=>{t.style.background=i===idx?'var(--teal)':'#0f0f23';t.style.color=i===idx?'white':'var(--text-muted)'})}
+function showSpTab(idx){document.querySelectorAll('.sp-panel').forEach((p,i)=>{p.style.display=i===idx?'block':'none'});document.querySelectorAll('.sp-tab').forEach((t,i)=>{t.style.background=i===idx?'var(--teal)':'var(--input-bg)';t.style.color=i===idx?'white':'var(--text-muted)'})}
 function updSP(country,cat,val){if(!S.sales_projections)S.sales_projections={};if(!S.sales_projections[country])S.sales_projections[country]={};if(!S.sales_projections[country][cat])S.sales_projections[country][cat]={};S.sales_projections[country][cat].supply_pkgs=val;const sh=S.sales_projections[country][cat].shortage_pkgs||0;S.capture_rates[country][cat]=sh>0?val/sh:0}
 const PT=['','Executive Overview','Financial Deep Dive','CAPEX & Pipeline','Risk & Timeline','Intelligence & Sensitivity','Scenario Controls'];
 function showPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page'+n).classList.add('active');document.querySelectorAll('.nav-item').forEach((item,i)=>item.classList.toggle('active',i===n-1));document.getElementById('pageTitle').textContent=PT[n]}
